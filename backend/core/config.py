@@ -1,6 +1,6 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import field_validator
+from pydantic import field_validator, Field
 from typing import List, Union
 
 class Settings(BaseSettings):
@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     Central configuration for the ElectionBuddy application.
     Loaded from environment variables or .env file.
     """
-    PROJECT_NAME: str = "ElectionBuddy"
+    PROJECT_NAME: str = Field("ElectionBuddy", alias="APP_NAME")
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
     

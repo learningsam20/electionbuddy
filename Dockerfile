@@ -18,7 +18,9 @@ RUN npm ci --legacy-peer-deps
 COPY frontend/ ./
 # VITE_API_BASE_URL must be set at build time (or via .env.production)
 ARG VITE_API_BASE_URL=""
+ARG VITE_GOOGLE_MAPS_API_KEY=""
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
 RUN npm run build
 
 # --------------- Stage 2: Python Wheel Builder ---------------
