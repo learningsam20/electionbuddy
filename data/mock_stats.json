@@ -1,0 +1,27 @@
+{
+  "district_id": "pune",
+  "total_registered": 1500000,
+  "male_count": 780000,
+  "female_count": 720000,
+  "gen_z_count": 350000,
+  "millennial_count": 650000,
+  "gen_x_count": 300000,
+  "boomer_count": 200000,
+  "assembly_stats": {
+    "kothrud": {
+      "total": 300000,
+      "male": 155000,
+      "female": 145000
+    },
+    "shivajinagar": {
+      "total": 280000,
+      "male": 145000,
+      "female": 135000
+    },
+    "kasba_peth": {
+      "total": 250000,
+      "male": 130000,
+      "female": 120000
+    }
+  }
+}

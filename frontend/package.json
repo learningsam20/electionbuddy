@@ -1,0 +1,36 @@
+{
+  "name": "democraplay-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.8.0",
+    "@opentelemetry/context-zone": "^1.24.0",
+    "@opentelemetry/instrumentation": "^0.51.0",
+    "@opentelemetry/instrumentation-fetch": "^0.51.0",
+    "@opentelemetry/sdk-trace-base": "^1.24.0",
+    "@opentelemetry/sdk-trace-web": "^1.24.0",
+    "firebase": "^10.9.0",
+    "lucide-react": "^0.364.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^6.22.3",
+    "recharts": "^3.8.1",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "vite": "^5.2.0"
+  }
+}

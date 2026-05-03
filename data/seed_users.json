@@ -1,0 +1,88 @@
+[
+  {
+    "email": "citizen@democraplay.com",
+    "password": "Citizen@123",
+    "role": "citizen",
+    "name": "Arjun Kumar",
+    "district": "Pune",
+    "assembly_constituency": "Kothrud",
+    "age": 25,
+    "gender": "Male",
+    "language": "en",
+    "voter_id": "ABC1234567",
+    "family_group_id": "FAM_001"
+  },
+  {
+    "email": "citizen2@democraplay.com",
+    "password": "Citizen@123",
+    "role": "citizen",
+    "name": "Sneha Patil",
+    "district": "Pune",
+    "assembly_constituency": "Kothrud",
+    "age": 22,
+    "gender": "Female",
+    "language": "mr",
+    "voter_id": "ABC7654321",
+    "family_group_id": "FAM_001"
+  },
+  {
+    "email": "citizen3@democraplay.com",
+    "password": "Citizen@123",
+    "role": "citizen",
+    "name": "Rohan Joshi",
+    "district": "Pune",
+    "assembly_constituency": "Shivajinagar",
+    "age": 30,
+    "gender": "Male",
+    "language": "en",
+    "voter_id": "XYZ9876543",
+    "family_group_id": "FAM_002"
+  },
+  {
+    "email": "citizen4@democraplay.com",
+    "password": "Citizen@123",
+    "role": "citizen",
+    "name": "Meera Deshmukh",
+    "district": "Pune",
+    "assembly_constituency": "Shivajinagar",
+    "age": 45,
+    "gender": "Female",
+    "language": "hi",
+    "voter_id": "XYZ3456789",
+    "family_group_id": "FAM_002"
+  },
+  {
+    "email": "officer@democraplay.com",
+    "password": "Officer@123",
+    "role": "officer",
+    "name": "Priya Sharma",
+    "district": "Pune",
+    "assembly_constituency": "Shivajinagar",
+    "age": 42,
+    "gender": "Female",
+    "language": "mr"
+  },
+  {
+    "email": "candidate@democraplay.com",
+    "password": "Candidate@123",
+    "role": "candidate",
+    "name": "Rajesh Singh",
+    "district": "Pune",
+    "assembly_constituency": "Kasba Peth",
+    "age": 50,
+    "gender": "Male",
+    "language": "hi",
+    "voter_id": "CAND123456"
+  },
+  {
+    "email": "admin@democraplay.com",
+    "password": "Admin@123",
+    "role": "admin",
+    "name": "System Admin",
+    "district": "System",
+    "assembly_constituency": "System",
+    "age": 35,
+    "gender": "Female",
+    "language": "en"
+  }
+]
