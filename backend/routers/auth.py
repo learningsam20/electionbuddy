@@ -13,10 +13,12 @@ router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
-def get_user(db: Session, email: str):
+def get_user(db: Session, email: str) -> models.User:
+    """Retrieve a user by their email address."""
     return db.query(models.User).filter(models.User.email == email).first()
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
+    """Validate JWT token and return the current authenticated user."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -37,6 +39,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 
 @router.post("/token", response_model=schemas.Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """Authenticates a user and returns an access token."""
     user = get_user(db, form_data.username)
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
@@ -52,6 +55,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 @router.post("/register", response_model=schemas.UserResponse)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    """Registers a new citizen user in the platform."""
     db_user = get_user(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -81,4 +85,5 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=schemas.UserResponse)
 def read_users_me(current_user: models.User = Depends(get_current_user)):
+    """Returns the profile of the currently logged-in user."""
     return current_user

@@ -1,16 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import useStore from '../store';
-import { Award, Users, Share2, TrendingUp, ShieldCheck, Zap, Info, BarChart3, PieChart, Calendar, Lightbulb, UserCheck, CheckCircle2, MessageSquare, MapPin, Sparkles, Database, Activity, ShieldAlert, FileText, Settings, Heart, Megaphone, ChevronRight, Check, AlertCircle, Clock, Eye, EyeOff, BellOff } from 'lucide-react';
+import { Award, Users, Share2, TrendingUp, ShieldCheck, Zap, Info, BarChart3, PieChart, Calendar, Lightbulb, UserCheck, CheckCircle2, MessageSquare, MapPin, Sparkles, Database, Activity, ShieldAlert, FileText, Settings, Heart, Megaphone, ChevronRight, Check, AlertCircle, Clock, Eye, EyeOff, BellOff, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import MaturityQuiz from '../components/MaturityQuiz';
-import PollingBoothMap from '../components/PollingBoothMap';
-import VoterIssueHub from '../components/VoterIssueHub';
-import CandidateDiscovery from '../components/CandidateDiscovery';
-import CampaignAssistant from '../components/CampaignAssistant';
-import AdminTelemetry from '../components/AdminTelemetry';
-import SocialPostGenerator from '../components/SocialPostGenerator';
-import RoleManagement from '../components/RoleManagement';
+
+// Lazy load heavy components
+const MaturityQuiz = lazy(() => import('../components/MaturityQuiz'));
+const PollingBoothMap = lazy(() => import('../components/PollingBoothMap'));
+const VoterIssueHub = lazy(() => import('../components/VoterIssueHub'));
+const CandidateDiscovery = lazy(() => import('../components/CandidateDiscovery'));
+const CampaignAssistant = lazy(() => import('../components/CampaignAssistant'));
+const AdminTelemetry = lazy(() => import('../components/AdminTelemetry'));
+const SocialPostGenerator = lazy(() => import('../components/SocialPostGenerator'));
+const RoleManagement = lazy(() => import('../components/RoleManagement'));
+
+const LoadingComponent = () => (
+  <div className="flex flex-col items-center justify-center p-20 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 animate-pulse">
+    <Loader2 className="text-teal-500 animate-spin mb-4" size={32} />
+    <p className="text-slate-500 font-bold">Loading component...</p>
+  </div>
+);
 
 export default function Dashboard() {
   const { user, token } = useStore();
@@ -156,7 +165,7 @@ export default function Dashboard() {
     switch (activeTab) {
       case 'maturity':
         return (
-          <>
+          <Suspense fallback={<LoadingComponent />}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <MaturityQuiz />
               <div className="space-y-8">
@@ -180,26 +189,28 @@ export default function Dashboard() {
                  </div>
               </div>
             </div>
-          </>
+          </Suspense>
         );
-      case 'candidates': return <CandidateDiscovery />;
+      case 'candidates': return <Suspense fallback={<LoadingComponent />}><CandidateDiscovery /></Suspense>;
       case 'logistics': return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2"><PollingBoothMap /></div>
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-100 dark:border-slate-700 flex flex-col justify-center">
-             <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-full w-fit mb-6 text-orange-600"><Lightbulb size={32} /></div>
-             <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">Pro-Tip for Voting Day</h3>
-             <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-6">Carry your EPIC card or a valid Photo ID. Best time to vote to avoid queues is usually between 10:00 AM and 1:00 PM.</p>
-             <button 
-               onClick={() => window.open('https://electorallogin.eci.gov.in/', '_blank')}
-               className="bg-slate-900 dark:bg-slate-700 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-colors"
-             >
-               Check Voter List
-             </button>
+        <Suspense fallback={<LoadingComponent />}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2"><PollingBoothMap /></div>
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-100 dark:border-slate-700 flex flex-col justify-center">
+               <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-full w-fit mb-6 text-orange-600"><Lightbulb size={32} /></div>
+               <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">Pro-Tip for Voting Day</h3>
+               <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-6">Carry your EPIC card or a valid Photo ID. Best time to vote to avoid queues is usually between 10:00 AM and 1:00 PM.</p>
+               <button 
+                 onClick={() => window.open('https://electorallogin.eci.gov.in/', '_blank')}
+                 className="bg-slate-900 dark:bg-slate-700 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-colors"
+               >
+                 Check Voter List
+               </button>
+            </div>
           </div>
-        </div>
+        </Suspense>
       );
-      case 'issues': return <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"><VoterIssueHub /><div className="bg-slate-900 rounded-3xl p-8 text-white flex flex-col justify-center"><h3 className="text-2xl font-black mb-4">Voice of the Voter</h3><p className="text-slate-400 leading-relaxed mb-6">Your submitted issues are aggregated and shared with candidates in your area to help them prioritize development work. Total issues in {user?.assembly_constituency}: <strong>124</strong></p><div className="flex -space-x-2"><div className="w-10 h-10 rounded-full bg-teal-500 border-2 border-slate-900 flex items-center justify-center text-[10px] font-black">78%</div><div className="w-10 h-10 rounded-full bg-indigo-500 border-2 border-slate-900 flex items-center justify-center text-[10px] font-black">22%</div></div></div></div>;
+      case 'issues': return <Suspense fallback={<LoadingComponent />}><div className="grid grid-cols-1 lg:grid-cols-2 gap-8"><VoterIssueHub /><div className="bg-slate-900 rounded-3xl p-8 text-white flex flex-col justify-center"><h3 className="text-2xl font-black mb-4">Voice of the Voter</h3><p className="text-slate-400 leading-relaxed mb-6">Your submitted issues are aggregated and shared with candidates in your area to help them prioritize development work. Total issues in {user?.assembly_constituency}: <strong>124</strong></p><div className="flex -space-x-2"><div className="w-10 h-10 rounded-full bg-teal-500 border-2 border-slate-900 flex items-center justify-center text-[10px] font-black">78%</div><div className="w-10 h-10 rounded-full bg-indigo-500 border-2 border-slate-900 flex items-center justify-center text-[10px] font-black">22%</div></div></div></div></Suspense>;
       case 'alerts':
         return (
           <div className="max-w-2xl mx-auto space-y-4">
@@ -368,7 +379,7 @@ export default function Dashboard() {
 
   const renderCandidateView = () => {
     switch (activeTab) {
-      case 'campaign': return <CampaignAssistant />;
+      case 'campaign': return <Suspense fallback={<LoadingComponent />}><CampaignAssistant /></Suspense>;
       case 'profile': return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
            <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-100 dark:border-slate-700">
@@ -425,7 +436,7 @@ export default function Dashboard() {
            </div>
         </div>
       );
-      case 'maturity': return <div className="max-w-2xl mx-auto"><MaturityQuiz /></div>;
+      case 'maturity': return <Suspense fallback={<LoadingComponent />}><div className="max-w-2xl mx-auto"><MaturityQuiz /></div></Suspense>;
       case 'alerts': return (
         <div className="max-w-2xl mx-auto space-y-4">
            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-6">Campaign Alerts</h3>
@@ -623,7 +634,7 @@ export default function Dashboard() {
            </div>
         </div>
       );
-      case 'logistics': return <PollingBoothMap isOfficer={true} />;
+      case 'logistics': return <Suspense fallback={<LoadingComponent />}><PollingBoothMap isOfficer={true} /></Suspense>;
       case 'alerts': return (
         <div className="max-w-2xl mx-auto bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">Automated Multi-lingual Alerts</h3>
@@ -763,7 +774,7 @@ export default function Dashboard() {
 
   const renderAdminView = () => {
     switch (activeTab) {
-      case 'telemetry': return <AdminTelemetry mode="telemetry" />;
+      case 'telemetry': return <Suspense fallback={<LoadingComponent />}><AdminTelemetry mode="telemetry" /></Suspense>;
       case 'billing': return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
            <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">

@@ -26,15 +26,15 @@ class User(Base):
 class UserAction(Base):
     __tablename__ = "user_actions"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     action_type = Column(String)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
 class CandidateProgress(Base):
     __tablename__ = "candidate_progress"
     id = Column(Integer, primary_key=True, index=True)
-    candidate_id = Column(Integer, ForeignKey("users.id"))
-    phase_id = Column(Integer, ForeignKey("timeline_phases.id"))
+    candidate_id = Column(Integer, ForeignKey("users.id"), index=True)
+    phase_id = Column(Integer, ForeignKey("timeline_phases.id"), index=True)
     status = Column(String, default="completed")
     timestamp = Column(DateTime, default=datetime.utcnow)
 
@@ -42,7 +42,7 @@ class Quiz(Base):
     __tablename__ = "quizzes"
 
     id = Column(Integer, primary_key=True, index=True)
-    generated_by_id = Column(Integer, ForeignKey("users.id"))
+    generated_by_id = Column(Integer, ForeignKey("users.id"), index=True)
     phase = Column(String)
     questions_json = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -57,7 +57,7 @@ class Election(Base):
 class TimelinePhase(Base):
     __tablename__ = "timeline_phases"
     id = Column(Integer, primary_key=True, index=True)
-    election_id = Column(Integer, ForeignKey("elections.id"))
+    election_id = Column(Integer, ForeignKey("elections.id"), index=True)
     title = Column(String)
     description = Column(String)
     points = Column(Integer, default=10)
@@ -71,7 +71,7 @@ class ChatMessage(Base):
     __tablename__ = "chat_messages"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     role = Column(String) # user or model
     content = Column(String)
     timestamp = Column(DateTime, default=datetime.utcnow)
@@ -83,13 +83,13 @@ class Telemetry(Base):
     method = Column(String)
     status_code = Column(Integer)
     latency_ms = Column(Float)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
 class CampaignMessage(Base) :
     __tablename__ = "campaign_messages"
     id = Column(Integer, primary_key=True, index=True)
-    candidate_id = Column(Integer, ForeignKey("users.id"))
+    candidate_id = Column(Integer, ForeignKey("users.id"), index=True)
     content = Column(String)
     status = Column(String, default="pending") # approved, rejected, quarantined
     flagged_reason = Column(String, nullable=True)
@@ -100,7 +100,7 @@ class CampaignMessage(Base) :
 class VoterIssue(Base):
     __tablename__ = "voter_issues"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=True)
     content = Column(String)
     audio_url = Column(String, nullable=True)
     constituency = Column(String)
@@ -109,7 +109,7 @@ class VoterIssue(Base):
 class CandidateProfile(Base):
     __tablename__ = "candidate_profiles"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     master_profile_json = Column(String)
     campaign_specific_json = Column(String)
     youtube_urls = Column(String)
@@ -120,7 +120,7 @@ class CandidateProfile(Base):
 class AuditLog(Base):
     __tablename__ = "audit_logs"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     action = Column(String)
     details = Column(String)
     timestamp = Column(DateTime, default=datetime.utcnow)
@@ -128,7 +128,7 @@ class AuditLog(Base):
 class SystemAlert(Base):
     __tablename__ = "system_alerts"
     id = Column(Integer, primary_key=True, index=True)
-    officer_id = Column(Integer, ForeignKey("users.id"))
+    officer_id = Column(Integer, ForeignKey("users.id"), index=True)
     content_json = Column(String)
     constituency = Column(String)
     timestamp = Column(DateTime, default=datetime.utcnow)
@@ -155,7 +155,7 @@ class BoothResource(Base):
 class FamilyMember(Base):
     __tablename__ = "family_members"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     name = Column(String)
     age = Column(Integer)
     relation = Column(String)
@@ -166,8 +166,8 @@ class FamilyMember(Base):
 class UserAlertStatus(Base):
     __tablename__ = "user_alert_status"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    alert_id = Column(Integer, ForeignKey("system_alerts.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    alert_id = Column(Integer, ForeignKey("system_alerts.id"), index=True)
     status = Column(String, default="unread") # read, unread, snoozed
     snoozed_until = Column(DateTime, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
@@ -175,7 +175,7 @@ class UserAlertStatus(Base):
 class UserGameProgress(Base):
     __tablename__ = "user_game_progress"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     current_stage = Column(Integer, default=1)
     unlocked_stages_json = Column(String, default="[1]")
     total_game_points = Column(Integer, default=0)

@@ -68,7 +68,8 @@ Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command $backen
 # 3. Start Frontend
 Write-Host "Starting React Frontend on port 5731..." -ForegroundColor Green
 $frontendDir = Join-Path $PSScriptRoot "frontend"
-Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command `"Write-Host 'ElectionBuddy Frontend Logs' -ForegroundColor Cyan; npm run dev`"" -WorkingDirectory $frontendDir -WindowStyle Normal
+# Use cmd.exe to run npm to avoid PowerShell shim module loading issues
+Start-Process -FilePath "cmd.exe" -ArgumentList "/c title ElectionBuddy Frontend Logs && npm run dev" -WorkingDirectory $frontendDir -WindowStyle Normal
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host " Servers are starting up in new windows." -ForegroundColor Green

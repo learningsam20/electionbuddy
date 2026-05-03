@@ -44,20 +44,23 @@ export default function PollingBoothMap({ data, isOfficer = false }) {
           setOptions({
             apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
             version: "weekly",
+            libraries: ["maps", "marker"]
           });
           gmapsInitialized = true;
         }
 
-        const { Map } = await importLibrary("maps");
+        const { Map, InfoWindow } = await importLibrary("maps");
+        const { AdvancedMarkerElement, PinElement } = await importLibrary("marker");
         
         const center = resources.length > 0 
-          ? { lat: resources[0].lat, lng: resources[0].lng }
+          ? { lat: resources[0].latitude, lng: resources[0].longitude }
           : { lat: 18.5204, lng: 73.8567 }; // Pune Default
 
         if (!googleMap.current && mapRef.current) {
           googleMap.current = new Map(mapRef.current, {
             center,
             zoom: viewMode === 'district' ? 12 : 18,
+            mapId: "ELECTION_BUDDY_MAP_ID", // Required for Advanced Markers
           });
         } else if (googleMap.current) {
           googleMap.current.setCenter(center);
@@ -65,29 +68,38 @@ export default function PollingBoothMap({ data, isOfficer = false }) {
         }
 
         // Clear existing markers
-        markers.current.forEach(m => m.setMap(null));
+        markers.current.forEach(m => m.map = null);
         markers.current = [];
 
-        // Add new markers using standard google.maps.Marker for compatibility
+        const infoWindow = new InfoWindow();
+
+        // Add new markers using AdvancedMarkerElement
         resources.forEach(r => {
-          const marker = new google.maps.Marker({
-            position: { lat: r.lat, lng: r.lng },
+          const pin = new PinElement({
+            background: r.type === 'control_room' ? '#4f46e5' : r.type === 'guard_room' ? '#f97316' : '#14b8a6',
+            borderColor: '#ffffff',
+            glyphColor: '#ffffff',
+            scale: 1.2
+          });
+
+          const marker = new AdvancedMarkerElement({
+            position: { lat: r.latitude, lng: r.longitude },
             map: googleMap.current,
             title: r.name,
-            label: {
-              text: r.name.charAt(0),
-              color: 'white',
-              fontWeight: 'bold'
-            },
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              fillColor: r.type === 'control_room' ? '#4f46e5' : r.type === 'guard_room' ? '#f97316' : '#14b8a6',
-              fillOpacity: 1,
-              strokeWeight: 2,
-              strokeColor: 'white',
-              scale: 15
-            }
+            content: pin.element,
           });
+
+          marker.addListener("click", () => {
+            infoWindow.setContent(`
+              <div style="padding: 8px; font-family: sans-serif;">
+                <h4 style="margin: 0 0 4px 0; font-weight: 800; color: #0f172a;">${r.name}</h4>
+                <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700;">${r.type.replace('_', ' ')}</p>
+                <p style="margin: 8px 0 0 0; font-size: 11px; color: #14b8a6; font-weight: 600;">Status: Operational</p>
+              </div>
+            `);
+            infoWindow.open(googleMap.current, marker);
+          });
+
           markers.current.push(marker);
         });
 
@@ -100,7 +112,7 @@ export default function PollingBoothMap({ data, isOfficer = false }) {
     if (mapRef.current) {
       initMap();
     }
-  }, [resources, viewMode, isOfficer, data]);
+  }, [resources, viewMode, isOfficer]);
 
   const getIconForType = (type) => {
     switch (type) {
