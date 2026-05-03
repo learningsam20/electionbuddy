@@ -1,10 +1,11 @@
-import { BasicTracerProvider, ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch';
 import { ZoneContextManager } from '@opentelemetry/context-zone';
 
 // Initialize the OTel Provider
-const provider = new BasicTracerProvider();
+const provider = new WebTracerProvider();
 
 // For the hackathon, we'll export React spans to the browser console.
 // If we had a true OTLP endpoint (e.g., Jaeger/GCP), we would use OTLPTraceExporter here.
