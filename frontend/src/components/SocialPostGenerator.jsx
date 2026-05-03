@@ -16,7 +16,7 @@ export default function SocialPostGenerator() {
     setLoading(true);
     setPost('');
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/citizen/social-posts`, {
+      const res = await fetch(`/api/v1/citizen/social-posts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ topic, target_language: lang, platform })

@@ -166,7 +166,7 @@ export default function ElectionGame() {
 
   const fetchProgress = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/game/progress`, {
+      const res = await fetch(`/api/v1/game/progress`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -180,7 +180,7 @@ export default function ElectionGame() {
 
   const handleStageComplete = async (stageId, points) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/game/complete-stage`, {
+      const res = await fetch(`/api/v1/game/complete-stage`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ export default function ElectionGame() {
   const fetchScenario = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/game/scenario`, {
+      const res = await fetch(`/api/v1/game/scenario`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();

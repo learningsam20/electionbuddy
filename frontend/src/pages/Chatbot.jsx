@@ -24,7 +24,7 @@ export default function Chatbot() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/chat/query`, {
+      const res = await fetch(`/api/v1/chat/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

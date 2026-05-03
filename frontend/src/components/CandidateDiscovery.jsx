@@ -12,18 +12,14 @@ export default function CandidateDiscovery() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/candidate/ext/list?constituency=${user?.assembly_constituency || ''}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+     fetch(`/api/v1/candidate/ext/list?constituency=${user?.assembly_constituency || ''}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
     })
-    .then(res => res.json())
-    .then(data => {
-      setCandidates(Array.isArray(data) ? data : []);
-      setLoading(false);
-    })
-    .catch(err => {
-      console.error(err);
-      setLoading(false);
-    });
+      .then((res) => res.json())
+      .then((data) => {
+        setCandidates(data);
+      });
   }, [token, user]);
 
   const [viewingProfile, setViewingProfile] = useState(false);
@@ -34,7 +30,7 @@ export default function CandidateDiscovery() {
     setLoading(true);
     setSummary('');
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/citizen/manifesto-summarizer`, {
+      const res = await fetch(`/api/v1/citizen/manifesto-summarizer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ candidate_id: candidate.id })

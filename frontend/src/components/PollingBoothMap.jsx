@@ -23,7 +23,7 @@ export default function PollingBoothMap({ data, isOfficer = false }) {
       ? (viewMode === 'district' ? `district=${user?.district || 'Pune'}` : `booth_id=${selectedBooth}`)
       : `booth_id=${user?.voter_id || 'PNE-01'}`; // Mock booth for citizens
       
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/officer/ext/booth-resources?${params}`, {
+    fetch(`/api/v1/officer/ext/booth-resources?${params}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => res.json())
@@ -124,7 +124,7 @@ export default function PollingBoothMap({ data, isOfficer = false }) {
       ? `district=${user?.district || 'Pune'}` 
       : `booth_id=${selectedBooth}`;
       
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/officer/ext/booth-resources?${params}`, {
+    fetch(`/api/v1/officer/ext/booth-resources?${params}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => res.json())

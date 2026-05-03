@@ -10,7 +10,7 @@ export default function RoleManagement() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/ext/users`, {
+      const res = await fetch(`/api/v1/admin/ext/users`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -29,7 +29,7 @@ export default function RoleManagement() {
 
   const handleUpdateRole = async (userId, newRole) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/ext/update-role`, {
+      const res = await fetch(`/api/v1/admin/ext/update-role`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

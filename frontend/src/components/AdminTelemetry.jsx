@@ -23,7 +23,7 @@ export default function AdminTelemetry({ mode = 'full' }) {
     const fetchData = async () => {
       try {
         if (mode === 'full' || mode === 'telemetry') {
-          const statsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/ext/telemetry`, {
+          const statsRes = await fetch(`/api/v1/admin/ext/telemetry`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const statsData = await statsRes.json();
@@ -31,7 +31,7 @@ export default function AdminTelemetry({ mode = 'full' }) {
         }
 
         if (mode === 'full' || mode === 'audit') {
-          const logsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/ext/audit-logs`, {
+          const logsRes = await fetch(`/api/v1/admin/ext/audit-logs`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const logsData = await logsRes.json();

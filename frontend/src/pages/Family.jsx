@@ -23,7 +23,7 @@ export default function Family() {
 
   const fetchMembers = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/family/`, {
+      const res = await fetch(`/api/v1/family/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -38,8 +38,8 @@ export default function Family() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = editingMember 
-      ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/family/${editingMember.id}`
-      : `${import.meta.env.VITE_API_BASE_URL}/api/v1/family/`;
+      ? `/api/v1/family/${editingMember.id}`
+      : '/api/v1/family/';
     
     const method = editingMember ? 'PUT' : 'POST';
 
@@ -67,7 +67,7 @@ export default function Family() {
   const handleDelete = async (id) => {
     if (!window.confirm('Remove this family member?')) return;
     try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/family/${id}`, {
+      await fetch(`/api/v1/family/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

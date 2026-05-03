@@ -13,7 +13,7 @@ export default function VoterIssueHub() {
     if (!content) return;
     setIsSubmitting(true);
     try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/citizen/submit-issue`, {
+      await fetch(`/api/v1/citizen/submit-issue`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

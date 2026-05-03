@@ -32,7 +32,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (user?.role === 'citizen' || user?.role === 'candidate') {
-      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/stats/my/family`, {
+      fetch(`/api/v1/stats/my/family`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -42,14 +42,14 @@ export default function Dashboard() {
     
     if (user?.role === 'officer') {
       setLoadingOfficer(true);
-      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/stats/officer/overview`, {
+      fetch(`/api/v1/stats/officer/overview`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
       .then(data => setOfficerData(data))
       .catch(err => console.error(err));
 
-      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/stats/officer/recommendations`, {
+       fetch(`/api/v1/stats/officer/recommendations`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -63,7 +63,7 @@ export default function Dashboard() {
       });
 
       // Fetch booths for target selection
-      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/officer/ext/booth-resources?district=${user?.district || 'Pune'}`, {
+       fetch(`/api/v1/officer/ext/booth-resources?district=${user?.district || 'Pune'}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -128,7 +128,7 @@ export default function Dashboard() {
   const [systemAlerts, setSystemAlerts] = useState([]);
 
   const fetchAlerts = () => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/ext/system-alerts`, {
+    fetch(`/api/v1/admin/ext/system-alerts`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => res.json())
@@ -142,7 +142,7 @@ export default function Dashboard() {
 
   const updateAlertStatus = async (alertId, status, snoozeHours = 0) => {
     try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/ext/alerts/${alertId}/status?status=${status}&snooze_hours=${snoozeHours}`, {
+      await fetch(`/api/v1/admin/ext/alerts/${alertId}/status?status=${status}&snooze_hours=${snoozeHours}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -319,7 +319,7 @@ export default function Dashboard() {
                          onClick={async () => {
                            if (!familyIdInput) return;
                            try {
-                             const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/citizen/link-family`, {
+                             const res = await fetch(`/api/v1/citizen/link-family`, {
                                method: 'POST',
                                headers: {
                                  'Content-Type': 'application/json',
@@ -332,7 +332,7 @@ export default function Dashboard() {
                                setLinkingStatus({ type: 'success', msg: 'Linked!' });
                                setFamilyIdInput('');
                                // Refresh stats
-                               fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/stats/my/family`, {
+      fetch(`/api/v1/stats/my/family`, {
                                  headers: { 'Authorization': `Bearer ${token}` }
                                })
                                .then(res => res.json())
@@ -475,7 +475,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (user?.role === 'officer' && activeTab === 'moderation') {
       setModLoading(true);
-      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/officer/ext/campaign-pending`, {
+       fetch(`/api/v1/officer/ext/campaign-pending`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -492,7 +492,7 @@ export default function Dashboard() {
 
   const handleModerate = async (id, status) => {
     try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/officer/ext/campaign-moderate/${id}`, {
+      await fetch(`/api/v1/officer/ext/campaign-moderate/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -674,7 +674,7 @@ export default function Dashboard() {
                   if (!content) return;
                   setAlertStatus(null);
                   try {
-                     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/ext/system-alerts`, {
+                        const res = await fetch(`/api/v1/admin/ext/system-alerts`, {
                         method: 'POST',
                         headers: {
                            'Content-Type': 'application/json',
@@ -814,7 +814,7 @@ export default function Dashboard() {
                      const content = adminAlertRef.current?.value;
                      if (!content) return;
                      try {
-                        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/ext/system-alerts`, {
+                     const res = await fetch(`/api/v1/admin/ext/system-alerts`, {
                            method: 'POST',
                            headers: {
                               'Content-Type': 'application/json',

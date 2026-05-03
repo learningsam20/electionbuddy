@@ -15,7 +15,7 @@ export default function CampaignAssistant() {
     setLoading(true);
     setResult('');
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/candidate/ext/campaign-assistant`, {
+      const res = await fetch(`/api/v1/candidate/ext/campaign-assistant`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ topic, format })

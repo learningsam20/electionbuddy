@@ -70,7 +70,7 @@ export default function MaturityQuiz({ onComplete }) {
     const finalScore = Math.round((score / MATURITY_QUESTIONS.length) * 10);
     
     try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/citizen/maturity-quiz`, {
+      await fetch(`/api/v1/citizen/maturity-quiz`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
