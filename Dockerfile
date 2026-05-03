@@ -12,7 +12,7 @@ WORKDIR /frontend
 
 # Copy dependency manifests first for layer caching
 COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # Copy source and build
 COPY frontend/ ./
