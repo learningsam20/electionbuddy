@@ -1,3 +1,6 @@
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from backend.core.config import settings
 
 # We expect SQLite path like sqlite:///./election.db
