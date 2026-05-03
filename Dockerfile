@@ -17,7 +17,7 @@ RUN npm ci
 # Copy source and build
 COPY frontend/ ./
 # VITE_API_BASE_URL must be set at build time (or via .env.production)
-ARG VITE_API_BASE_URL=/
+ARG VITE_API_BASE_URL=""
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN npm run build
 
