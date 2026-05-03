@@ -54,20 +54,23 @@ Write-Host "Checking for existing instances..." -ForegroundColor White
 Kill-Port -Port 8573
 Kill-Port -Port 5731
 
+# Adjust paths to run from scripts/ directory
+$ProjectRoot = Join-Path $PSScriptRoot ".."
+Set-Location $ProjectRoot
+
 # 2. Start Backend
 Write-Host "Starting FastAPI Backend on port 8573..." -ForegroundColor Green
-# Use venv python if it works, otherwise fall back to the system python that has the packages
-$venvPython = Join-Path $PSScriptRoot "backend\Scripts\python.exe"
+$venvPython = Join-Path $ProjectRoot "backend\Scripts\python.exe"
 $sysPython  = (Get-Command python -ErrorAction SilentlyContinue).Source
 $pythonExe  = if (Test-Path $venvPython) { $venvPython } else { $sysPython }
 # Verify the chosen python has fastapi; if not, use system python
 $hasFastapi = & $pythonExe -c "import fastapi" 2>$null; if ($LASTEXITCODE -ne 0) { $pythonExe = $sysPython }
 $backendCmd = "Write-Host 'ElectionBuddy Backend Logs' -ForegroundColor Cyan; `$env:LOAD_DEMO_DATA='$env:LOAD_DEMO_DATA'; & '$pythonExe' -m uvicorn backend.main:app --reload --port 8573"
-Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command $backendCmd" -WorkingDirectory $PSScriptRoot -WindowStyle Normal
+Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command $backendCmd" -WorkingDirectory $ProjectRoot -WindowStyle Normal
 
 # 3. Start Frontend
 Write-Host "Starting React Frontend on port 5731..." -ForegroundColor Green
-$frontendDir = Join-Path $PSScriptRoot "frontend"
+$frontendDir = Join-Path $ProjectRoot "frontend"
 # Use cmd.exe to run npm to avoid PowerShell shim module loading issues
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c title ElectionBuddy Frontend Logs && npm run dev" -WorkingDirectory $frontendDir -WindowStyle Normal
 

@@ -893,7 +893,13 @@ export default function Dashboard() {
         <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-2xl flex items-center gap-3 text-red-600 dark:text-red-400 font-bold animate-in slide-in-from-top-4">
           <AlertCircle size={20} />
           <p>{globalError}</p>
-          <button onClick={() => setGlobalError(null)} className="ml-auto text-xs uppercase tracking-widest bg-red-100 dark:bg-red-800 px-3 py-1 rounded-lg">Dismiss</button>
+          <button 
+            onClick={() => setGlobalError(null)} 
+            aria-label="Dismiss error message"
+            className="ml-auto text-xs uppercase tracking-widest bg-red-100 dark:bg-red-800 px-3 py-1 rounded-lg focus:ring-2 focus:ring-red-500"
+          >
+            Dismiss
+          </button>
         </div>
       )}
       <div className="mb-10 flex justify-between items-end">

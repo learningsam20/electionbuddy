@@ -6,45 +6,27 @@
 
 ## Project Structure
 
-`
+```
 electionbuddy/
-├── backend/
-│   ├── core/              # Security (JWT), telemetry exporter
-│   ├── routers/           # FastAPI route handlers (14 routers)
-│   │   ├── auth.py        # Login, register, JWT
-│   │   ├── timeline.py    # Election phases + progress tracking
-│   │   ├── citizen.py     # Citizen-specific actions
-│   │   ├── candidate.py   # Candidate profile & progress
-│   │   ├── candidate_ext.py # Extended candidate features
-│   │   ├── officer_ext.py # Officer command centre
-│   │   ├── officer.py     # Officer endpoints
-│   │   ├── admin_ext.py   # Admin telemetry & management
-│   │   ├── admin.py       # Admin user/role management
-│   │   ├── family.py      # Family group linking
-│   │   ├── game.py        # Gamification & leaderboard helpers
-│   │   ├── quiz.py        # Quiz generation
-│   │   ├── gemini.py      # Gemini AI chat endpoints
-│   │   ├── stats.py       # Statistics aggregation
-│   │   └── leaderboard.py # User rankings
+├── backend/               # FastAPI Python Backend
+│   ├── core/              # Config, Security (JWT), Seeding
+│   ├── routers/           # FastAPI route handlers (RBAC optimized)
 │   ├── models.py          # SQLAlchemy ORM models
-│   ├── schemas.py         # Pydantic request/response schemas
-│   ├── database.py        # DB engine & session factory
-│   ├── main.py            # FastAPI app, middleware, startup seeding
-│   ├── seed_data.py       # Standalone seeding script
-│   └── requirements.txt
-├── frontend/
+│   ├── schemas.py         # Pydantic V2 request/response schemas
+│   └── database.py        # DB engine & session factory
+├── frontend/              # Vite + React Frontend
 │   ├── src/
-│   │   ├── components/    # Shared UI components
-│   │   ├── pages/         # Route-level pages
-│   │   ├── store/         # Zustand global state
-│   │   └── App.jsx        # Router setup
-│   ├── package.json
-│   └── vite.config.js
-├── data/                  # SQLite DB file (gitignored) + seed data
-├── Dockerfile             # Multi-stage production build
-├── start.ps1              # Windows dev launcher
-└── .env.example           # Environment variable reference
-`
+│   │   ├── components/    # Accessible (ARIA) UI components
+│   │   ├── pages/         # Dashboard & Role-specific views
+│   │   └── store/         # Zustand global state
+├── data/                  # SQLite DB file + JSON seed data
+├── docs/                  # Architecture & feature documentation
+├── infra/                 # Docker & Firebase configuration
+├── scripts/               # Management & testing scripts
+├── start.ps1              # Windows dev launcher (Root entry)
+├── test_report.md         # Comprehensive quality & test report
+└── .env.example           # Environment variable template
+```
 
 ---
 

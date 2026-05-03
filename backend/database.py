@@ -1,13 +1,7 @@
-import os
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-
-load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
+from backend.core.config import settings
 
 # We expect SQLite path like sqlite:///./election.db
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./election.db")
+SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
 # For SQLite, check_same_thread=False is needed if passing the connection across threads
 connect_args = {"check_same_thread": False} if SQLALCHEMY_DATABASE_URL.startswith("sqlite") else {}

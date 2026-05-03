@@ -109,6 +109,7 @@ export default function RoleManagement() {
                          <button
                            key={r}
                            onClick={() => handleUpdateRole(u.id, r)}
+                           aria-label={`Change role of ${u.name} to ${r}`}
                            className="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-teal-500 hover:text-white dark:hover:bg-teal-600 rounded-lg text-[10px] font-black uppercase transition-all"
                          >
                            Set {r}
