@@ -175,8 +175,13 @@ export default function PollingBoothMap({ data, isOfficer = false }) {
         )}
       </div>
 
-      <div className="relative h-[450px] bg-slate-100 dark:bg-slate-900">
-        <div ref={mapRef} className="w-full h-full" />
+      <div 
+        ref={mapRef} 
+        className="relative h-[450px] bg-slate-100 dark:bg-slate-900"
+        role="application"
+        aria-label="Interactive Map of Polling Station and Logistics"
+      >
+        <div className="w-full h-full" />
         
         {mapError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-900 z-10 p-10 text-center">

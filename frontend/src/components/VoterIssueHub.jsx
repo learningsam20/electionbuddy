@@ -64,8 +64,20 @@ export default function VoterIssueHub() {
           <MessageSquare className="text-indigo-500 mr-2" size={24} /> Voice of the Voter
         </h3>
         <div className="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl">
-          <button onClick={() => setMode('text')} className={`px-4 py-1 rounded-lg text-xs font-bold transition-all ${mode === 'text' ? 'bg-white dark:bg-slate-600 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400'}`}>TEXT</button>
-          <button onClick={() => setMode('audio')} className={`px-4 py-1 rounded-lg text-xs font-bold transition-all ${mode === 'audio' ? 'bg-white dark:bg-slate-600 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400'}`}>AUDIO</button>
+          <button 
+            onClick={() => setMode('text')} 
+            aria-pressed={mode === 'text'}
+            className={`px-4 py-1 rounded-lg text-xs font-bold transition-all ${mode === 'text' ? 'bg-white dark:bg-slate-600 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400'}`}
+          >
+            TEXT
+          </button>
+          <button 
+            onClick={() => setMode('audio')} 
+            aria-pressed={mode === 'audio'}
+            className={`px-4 py-1 rounded-lg text-xs font-bold transition-all ${mode === 'audio' ? 'bg-white dark:bg-slate-600 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400'}`}
+          >
+            AUDIO
+          </button>
         </div>
       </div>
 
@@ -78,6 +90,7 @@ export default function VoterIssueHub() {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Describe the issue in your area..."
+          aria-label="Describe your issue"
           className="w-full h-32 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none"
         />
       ) : (

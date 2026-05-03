@@ -114,7 +114,7 @@ export default function MaturityQuiz({ onComplete }) {
         <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 leading-snug">{currentQ.question}</h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4" role="radiogroup" aria-label="Quiz Options">
         {currentQ.options.map((opt, idx) => {
           let buttonClass = "w-full text-left p-5 rounded-2xl border-2 transition-all font-semibold ";
           if (!isAnswered) {
@@ -130,7 +130,15 @@ export default function MaturityQuiz({ onComplete }) {
           }
 
           return (
-            <button key={idx} onClick={() => handleSelect(opt)} disabled={isAnswered} className={buttonClass}>
+            <button 
+              key={idx} 
+              onClick={() => handleSelect(opt)} 
+              disabled={isAnswered} 
+              className={buttonClass}
+              role="radio"
+              aria-checked={selectedOption === opt}
+              aria-label={opt}
+            >
               <div className="flex justify-between items-center">
                 <span>{opt}</span>
                 {isAnswered && opt === currentQ.correct_answer && <CheckCircle className="text-green-500" size={20} />}
@@ -142,7 +150,10 @@ export default function MaturityQuiz({ onComplete }) {
       </div>
 
       {isAnswered && (
-        <div className="mt-8 p-5 bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800 rounded-2xl">
+        <div 
+          className="mt-8 p-5 bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800 rounded-2xl"
+          aria-live="polite"
+        >
           <h4 className="font-bold flex items-center mb-2 text-teal-900 dark:text-teal-300">
             <BookOpen className="mr-2" size={18} /> Explanation
           </h4>

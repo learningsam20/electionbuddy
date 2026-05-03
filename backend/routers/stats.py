@@ -15,8 +15,17 @@ class ActionRequest(BaseModel):
 
 router = APIRouter()
 
+from functools import lru_cache
+from typing import Dict, Any
+
 @router.get("/{district_id}")
+@lru_cache(maxsize=32)
 def get_district_stats(district_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Retrieves demographic statistics for a specific district.
+    Only accessible by officers and admins.
+    Cached for performance.
+    """
     if current_user.role not in ["officer", "admin"]:
         raise HTTPException(status_code=403, detail="Not authorized to view full analytics")
     
@@ -60,7 +69,10 @@ def get_district_stats(district_id: str, current_user: User = Depends(get_curren
     }
 
 @router.get("/my/family")
-def get_family_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_family_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> Dict[str, Any]:
+    """
+    Calculates aggregated maturity and point statistics for the current user's family group.
+    """
     if not current_user.family_group_id:
         return {"family_maturity": 0, "member_count": 0, "message": "No family group set"}
     
@@ -80,6 +92,7 @@ def get_family_stats(current_user: User = Depends(get_current_user), db: Session
 
 @router.post("/action")
 def log_user_action(request: ActionRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Logs a specific user interaction and awards points if applicable."""
     action = UserAction(user_id=current_user.id, action_type=request.action_type)
     db.add(action)
     
@@ -91,7 +104,12 @@ def log_user_action(request: ActionRequest, current_user: User = Depends(get_cur
     return {"status": "ok", "action": request.action_type}
 
 @router.get("/officer/overview")
+@lru_cache(maxsize=16)
 def get_officer_overview(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Provides a high-level overview for election officers including citizen progress
+    and candidate milestones in their district.
+    """
     if current_user.role != "officer":
         raise HTTPException(status_code=403, detail="Only officers can view this dashboard")
     
@@ -102,12 +120,10 @@ def get_officer_overview(current_user: User = Depends(get_current_user), db: Ses
     total_citizens = citizens.count()
     
     # Education Progress (Quiz completions)
-    # Group users by number of quizzes completed
     quiz_stats = db.query(UserAction.user_id, func.count(UserAction.id))\
         .filter(UserAction.action_type == "quiz_completed")\
         .group_by(UserAction.user_id).all()
     
-    # Categorize levels: Level 1 (1-2), Level 2 (3-5), Level 3 (6+)
     levels = {"Level 1": 0, "Level 2": 0, "Level 3": 0}
     for _, count in quiz_stats:
         if count < 3: levels["Level 1"] += 1
@@ -118,7 +134,6 @@ def get_officer_overview(current_user: User = Depends(get_current_user), db: Ses
     candidates = db.query(User).filter(User.role == "candidate", User.district == district)
     candidate_count = candidates.count()
     
-    # Progressive Campaign Status
     campaign_status = db.query(CandidateProgress).join(User).filter(User.district == district).count()
 
     # Upcoming Elections
@@ -140,10 +155,12 @@ def get_officer_overview(current_user: User = Depends(get_current_user), db: Ses
 
 @router.get("/officer/recommendations")
 def get_ai_recommendations(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Generates AI-driven strategic recommendations for election officers based on live district data.
+    """
     if current_user.role != "officer":
         raise HTTPException(status_code=403, detail="Only officers can view this")
     
-    # Get summary data to feed to AI
     overview = get_officer_overview(current_user, db)
     
     api_key = os.getenv("GEMINI_API_KEY")

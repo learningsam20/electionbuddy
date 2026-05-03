@@ -124,6 +124,8 @@ export default function Dashboard() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
+            aria-pressed={activeTab === tab.id}
+            aria-label={`Switch to ${tab.label} view`}
             className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-slate-900 dark:bg-teal-600 text-white shadow-lg shadow-slate-900/10 dark:shadow-teal-600/20' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
           >
             <tab.icon size={18} />

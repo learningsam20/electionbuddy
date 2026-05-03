@@ -28,7 +28,11 @@ export default function ThemeToggle() {
   };
 
   return (
-    <button onClick={toggleTheme} className="fixed bottom-4 right-4 p-3 rounded-full bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-800 shadow-lg hover:scale-110 transition-transform z-50">
+    <button 
+      onClick={toggleTheme} 
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className="fixed bottom-4 right-4 p-3 rounded-full bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-800 shadow-lg hover:scale-110 transition-transform z-50 focus:ring-2 focus:ring-teal-500"
+    >
       {isDark ? <Sun size={24} /> : <Moon size={24} />}
     </button>
   );

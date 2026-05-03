@@ -44,12 +44,17 @@ export default function Layout({ children }) {
             </div>
           </div>
         </div>
-        <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto no-scrollbar">
+        <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto no-scrollbar" role="navigation" aria-label="Main Navigation">
           {navItems.map(item => {
             const Icon = item.icon;
             const active = location.pathname.startsWith(item.path);
             return (
-              <Link key={item.path} to={item.path} className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors font-medium ${active ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'}`}>
+              <Link 
+                key={item.path} 
+                to={item.path} 
+                aria-current={active ? 'page' : undefined}
+                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors font-medium ${active ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'}`}
+              >
                 <Icon size={20} />
                 <span>{item.name}</span>
               </Link>
