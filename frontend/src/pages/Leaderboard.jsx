@@ -36,21 +36,21 @@ export default function Leaderboard() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
-        <div className="grid grid-cols-12 gap-4 px-8 py-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          <div className="col-span-1">Rank</div>
-          <div className="col-span-6">Citizen</div>
-          <div className="col-span-3">Constituency</div>
-          <div className="col-span-2 text-right">Points</div>
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700" role="table" aria-label="Citizen Leaderboard">
+        <div className="grid grid-cols-12 gap-4 px-8 py-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400" role="row">
+          <div className="col-span-1" role="columnheader">Rank</div>
+          <div className="col-span-6" role="columnheader">Citizen</div>
+          <div className="col-span-3" role="columnheader">Constituency</div>
+          <div className="col-span-2 text-right" role="columnheader">Points</div>
         </div>
 
-        <div className="divide-y divide-slate-100 dark:divide-slate-700">
+        <div className="divide-y divide-slate-100 dark:divide-slate-700" role="rowgroup">
           {leaders.map((leader) => {
             const isMe = leader.name === user?.name;
             return (
-              <div key={leader.rank} className={`grid grid-cols-12 gap-4 px-8 py-5 items-center transition-colors ${isMe ? 'bg-teal-50 dark:bg-teal-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-700/30'}`}>
-                <div className="col-span-1">
-                  <span className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${
+              <div key={leader.rank} role="row" aria-current={isMe ? "row" : undefined} className={`grid grid-cols-12 gap-4 px-8 py-5 items-center transition-colors ${isMe ? 'bg-teal-50 dark:bg-teal-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-700/30'}`}>
+                <div className="col-span-1" role="cell">
+                  <span aria-label={`Rank ${leader.rank}`} className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${
                     leader.rank === 1 ? 'bg-yellow-100 text-yellow-700' : 
                     leader.rank === 2 ? 'bg-slate-200 text-slate-700' : 
                     leader.rank === 3 ? 'bg-orange-100 text-orange-700' : 
@@ -59,7 +59,7 @@ export default function Leaderboard() {
                     {leader.rank}
                   </span>
                 </div>
-                <div className="col-span-6 flex items-center space-x-3">
+                <div className="col-span-6 flex items-center space-x-3" role="cell">
                   <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
                     <User size={18} className="text-slate-500" />
                   </div>
@@ -69,10 +69,10 @@ export default function Leaderboard() {
                     </p>
                   </div>
                 </div>
-                <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 font-medium">
+                <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 font-medium" role="cell">
                   {leader.assembly_constituency}
                 </div>
-                <div className="col-span-2 text-right font-black text-slate-900 dark:text-white">
+                <div className="col-span-2 text-right font-black text-slate-900 dark:text-white" role="cell">
                   {leader.total_points.toLocaleString()}
                 </div>
               </div>

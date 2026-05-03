@@ -154,9 +154,11 @@ def get_officer_overview(current_user: User = Depends(get_current_user), db: Ses
     }
 
 @router.get("/officer/recommendations")
+@lru_cache(maxsize=16)
 def get_ai_recommendations(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """
     Generates AI-driven strategic recommendations for election officers based on live district data.
+    Results are cached to optimize API utilization.
     """
     if current_user.role != "officer":
         raise HTTPException(status_code=403, detail="Only officers can view this")

@@ -48,7 +48,7 @@ export default function VoterIssueHub() {
 
   if (submitted) {
     return (
-      <div className="p-8 bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800 rounded-3xl text-center">
+      <div className="p-8 bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800 rounded-3xl text-center" aria-live="polite">
         <CheckCircle2 className="w-12 h-12 text-teal-500 mx-auto mb-4" />
         <h3 className="text-xl font-black text-teal-900 dark:text-teal-300 mb-2">Issue Submitted Anonymously</h3>
         <p className="text-teal-700 dark:text-teal-400 text-sm mb-6">Your voice has been added to the "Voice of the Voter" hub. Candidates in {user?.assembly_constituency} will see this in their priority heatmap.</p>

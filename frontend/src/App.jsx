@@ -19,24 +19,28 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? <Layout>{children}</Layout> : <Navigate to="/login" />;
 };
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 function App() {
   return (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <div className="min-h-screen text-slate-900 dark:text-slate-50 transition-colors">
-        <Routes>
-          <Route path="/login" element={<><ThemeToggle /><Login /></>} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/timeline" element={<ProtectedRoute><Timeline /></ProtectedRoute>} />
-          <Route path="/chat" element={<ProtectedRoute><Chatbot /></ProtectedRoute>} />
-          <Route path="/quiz" element={<ProtectedRoute><QuizMode /></ProtectedRoute>} />
-          <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-          <Route path="/family" element={<ProtectedRoute><Family /></ProtectedRoute>} />
-          <Route path="/game" element={<ProtectedRoute><ElectionGame /></ProtectedRoute>} />
-          <Route path="/admin/roles" element={<ProtectedRoute><AdminRoles /></ProtectedRoute>} />
-          <Route path="/" element={<Navigate to="/login" />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <div className="min-h-screen text-slate-900 dark:text-slate-50 transition-colors">
+          <Routes>
+            <Route path="/login" element={<><ThemeToggle /><Login /></>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/timeline" element={<ProtectedRoute><Timeline /></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute><Chatbot /></ProtectedRoute>} />
+            <Route path="/quiz" element={<ProtectedRoute><QuizMode /></ProtectedRoute>} />
+            <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+            <Route path="/family" element={<ProtectedRoute><Family /></ProtectedRoute>} />
+            <Route path="/game" element={<ProtectedRoute><ElectionGame /></ProtectedRoute>} />
+            <Route path="/admin/roles" element={<ProtectedRoute><AdminRoles /></ProtectedRoute>} />
+            <Route path="/" element={<Navigate to="/login" />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 export default App;

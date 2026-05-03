@@ -27,6 +27,7 @@ export default function Layout({ children }) {
 
   return (
     <div className="h-screen bg-slate-50 dark:bg-slate-900 transition-colors flex overflow-hidden">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:p-4 focus:rounded-xl focus:shadow-2xl">Skip to content</a>
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transition-colors h-full">
         <div className="p-6 border-b border-slate-100 dark:border-slate-700">
@@ -70,7 +71,7 @@ export default function Layout({ children }) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto relative">
+      <main id="main-content" className="flex-1 overflow-y-auto relative">
         <ThemeToggle />
         <div className="p-8">
           {children}

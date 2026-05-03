@@ -38,11 +38,17 @@ export default function RoleManagement() {
         body: JSON.stringify({ user_id: userId, new_role: newRole })
       });
       const data = await res.json();
-      setMessage(data.message);
-      fetchUsers();
-      setTimeout(() => setMessage(''), 3000);
+      if (res.ok) {
+        setMessage({ type: 'success', text: data.message });
+        fetchUsers();
+      } else {
+        setMessage({ type: 'error', text: data.detail || 'Failed to update role' });
+      }
+      setTimeout(() => setMessage(null), 3000);
     } catch (err) {
       console.error(err);
+      setMessage({ type: 'error', text: 'Network connection error' });
+      setTimeout(() => setMessage(null), 3000);
     }
   };
 
@@ -56,8 +62,8 @@ export default function RoleManagement() {
               <UserCog className="text-teal-500" size={28} /> Global Role Management
            </h3>
            {message && (
-             <div className="px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl text-xs font-black animate-bounce">
-                {message}
+             <div className={`px-4 py-2 rounded-xl text-xs font-black animate-in fade-in slide-in-from-right-4 ${message.type === 'success' ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'}`}>
+                {message.text}
              </div>
            )}
         </div>

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from backend.routers.auth import get_current_user
 from backend.models import User, Telemetry, CloudUsage, AuditLog, SystemAlert, UserAlertStatus
@@ -54,7 +54,7 @@ def get_system_alerts(current_user: User = Depends(get_current_user), db: Sessio
         snoozed_until = status_entry.snoozed_until if status_entry else None
         
         # Filter out snoozed alerts if they are still in snooze period
-        if status == "snoozed" and snoozed_until and snoozed_until > datetime.utcnow():
+        if status == "snoozed" and snoozed_until and snoozed_until > datetime.now(timezone.utc):
             continue
 
         results.append({
@@ -82,7 +82,7 @@ def update_alert_status(alert_id: int, status: str, snooze_hours: int = 0, curre
     
     entry.status = status
     if status == "snoozed":
-        entry.snoozed_until = datetime.utcnow() + timedelta(hours=snooze_hours)
+        entry.snoozed_until = datetime.now(timezone.utc) + timedelta(hours=snooze_hours)
     else:
         entry.snoozed_until = None
     

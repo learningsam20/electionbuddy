@@ -29,6 +29,8 @@ const RegistrationStage = ({ onComplete }) => {
           <button 
             key={doc} 
             onClick={() => toggleDoc(doc)}
+            aria-pressed={selected.includes(doc)}
+            aria-label={`Select ${doc}`}
             className={`p-6 rounded-2xl border-2 transition-all font-bold ${selected.includes(doc) ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'}`}
           >
             {doc}

@@ -23,6 +23,10 @@ class MessageCreate(BaseModel):
 
 @router.post("/campaign")
 def submit_campaign_message(message_in: MessageCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Submits a new campaign message. 
+    The content is automatically reviewed by Gemini AI for compliance with election rules.
+    """
     if current_user.role != "candidate":
         raise HTTPException(status_code=403, detail="Only candidates can submit campaign messages.")
     
@@ -68,6 +72,9 @@ def submit_campaign_message(message_in: MessageCreate, current_user: User = Depe
 
 @router.get("/campaign")
 def get_campaign_messages(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Retrieves history of campaign messages submitted by the candidate.
+    """
     if current_user.role != "candidate":
         raise HTTPException(status_code=403, detail="Not authorized")
         
@@ -76,6 +83,9 @@ def get_campaign_messages(current_user: User = Depends(get_current_user), db: Se
 
 @router.post("/progress")
 def save_candidate_progress(request: ProgressCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Marks a campaign phase as completed for the candidate.
+    """
     if current_user.role != "candidate":
         raise HTTPException(status_code=403, detail="Only candidates can use this endpoint")
     
@@ -95,6 +105,9 @@ def save_candidate_progress(request: ProgressCreate, current_user: User = Depend
 
 @router.get("/progress")
 def get_candidate_progress(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Retrieves the list of campaign phases completed by the candidate.
+    """
     if current_user.role != "candidate":
         raise HTTPException(status_code=403, detail="Not authorized")
     

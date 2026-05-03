@@ -8,8 +8,16 @@ from backend.database import get_db
 
 router = APIRouter()
 
+from functools import lru_cache
+
 @router.get("/")
+@lru_cache(maxsize=32)
 def get_leaderboard(district: str = None, limit: int = 10, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Retrieves the top citizens by points in a specific district.
+    Results are cached to reduce database load.
+    Usernames are partially masked for privacy when viewed by others.
+    """
     # Default to user's district if none provided
     query_district = district if district else current_user.district
     

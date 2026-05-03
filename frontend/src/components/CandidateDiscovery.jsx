@@ -91,13 +91,13 @@ export default function CandidateDiscovery() {
       </div>
 
       {selectedCandidate && (
-        <div className="bg-slate-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
+        <div className="bg-slate-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden" aria-live="polite">
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-black flex items-center">
                 <Sparkles className="text-teal-400 mr-3" size={28} /> AI Manifesto Summary: {selectedCandidate.name}
               </h3>
-              <button onClick={() => setSelectedCandidate(null)} className="text-slate-400 hover:text-white font-bold">Close</button>
+              <button onClick={() => setSelectedCandidate(null)} className="text-slate-400 hover:text-white font-bold" aria-label="Close Summary">Close</button>
             </div>
             
             {viewingProfile ? (

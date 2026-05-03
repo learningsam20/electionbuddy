@@ -52,8 +52,9 @@ export default function CampaignAssistant() {
         <div className="space-y-6">
           {error && <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-xl border border-red-100 dark:border-red-800">{error}</div>}
           <div>
-            <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-3">What's the topic?</label>
+            <label htmlFor="topic-input" className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-3">What's the topic?</label>
             <input 
+              id="topic-input"
               type="text" 
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
@@ -63,8 +64,8 @@ export default function CampaignAssistant() {
           </div>
 
           <div>
-            <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-3">Content Format</label>
-            <div className="grid grid-cols-3 gap-3">
+            <label id="format-label" className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-3">Content Format</label>
+            <div className="grid grid-cols-3 gap-3" role="radiogroup" aria-labelledby="format-label">
               {[
                 { id: 'speech', label: 'Speech', icon: Megaphone },
                 { id: 'press_release', label: 'Press Release', icon: FileText },
@@ -73,6 +74,8 @@ export default function CampaignAssistant() {
                 <button 
                   key={f.id}
                   onClick={() => setFormat(f.id)}
+                  role="radio"
+                  aria-checked={format === f.id}
                   className={`p-4 rounded-2xl border-2 font-bold flex flex-col items-center gap-2 transition-all ${format === f.id ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400' : 'border-slate-100 dark:border-slate-700 text-slate-400'}`}
                 >
                   <f.icon size={20} />
@@ -85,6 +88,7 @@ export default function CampaignAssistant() {
           <button 
             onClick={handleGenerate}
             disabled={loading || !topic}
+            aria-busy={loading}
             className="w-full bg-teal-600 hover:bg-teal-500 text-white py-4 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-teal-600/20"
           >
             {loading ? 'AI is drafting...' : <><Sparkles size={20} /> Generate Draft</>}
@@ -93,7 +97,7 @@ export default function CampaignAssistant() {
       </div>
 
       {result && (
-        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-3xl p-8 border border-slate-100 dark:border-slate-700">
+        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-3xl p-8 border border-slate-100 dark:border-slate-700" aria-live="polite">
            <div className="flex items-center justify-between mb-6">
               <h4 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-widest">Generated {format.replace('_', ' ')}</h4>
               <div className="flex gap-2">

@@ -21,11 +21,6 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from backend.core.telemetry_exporter import SQLiteSpanExporter
 
-app = FastAPI(
-    title="ElectionBuddy API",
-    description="Backend for the ElectionBuddy interactive election assistant.",
-    version="1.0.0"
-)
 
 # Configure OpenTelemetry Standard Tracer
 provider = TracerProvider()
@@ -33,21 +28,11 @@ processor = BatchSpanProcessor(SQLiteSpanExporter())
 provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
-# Instrument the FastAPI app natively with OTel
-FastAPIInstrumentor.instrument_app(app)
+# Instrumentation and CORS will be added after app is created below
 
 # Setup CORS
 origins = os.getenv("CORS_ORIGINS", "*").split(",")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-from fastapi.middleware.gzip import GZipMiddleware
-app.add_middleware(GZipMiddleware, minimum_size=1000)
+# Middleware will be added after app is created below
 
 # Seed Database
 def seed_db():
@@ -195,11 +180,49 @@ def seed_demo_data():
         print("Demo data already exists, skipping.")
     db.close()
 
-@app.on_event("startup")
-def on_startup():
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
     seed_db()
     if os.getenv("LOAD_DEMO_DATA") == "1":
         seed_demo_data()
+    yield
+    # Shutdown (nothing to do here yet)
+
+app = FastAPI(
+    title="ElectionBuddy API",
+    description="Backend for the ElectionBuddy interactive election assistant.",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# Late instrumentation and middleware
+FastAPIInstrumentor.instrument_app(app)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+from fastapi.middleware.gzip import GZipMiddleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """
+    Global exception handler to catch all unhandled errors.
+    Returns a clean JSON response instead of a raw traceback.
+    """
+    return JSONResponse(
+        status_code=500,
+        content={"status": "error", "message": "An unexpected server error occurred. Please try again later.", "detail": str(exc) if os.getenv("DEBUG") == "1" else None},
+    )
 
 # Include Routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
