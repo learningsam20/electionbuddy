@@ -35,18 +35,19 @@ const RegistrationStage = ({ onComplete }) => {
           </button>
         ))}
       </div>
-      {selected.length === 2 && (
+      <div className="pt-8">
         <button 
           onClick={() => {
             const isCorrect = required.every(d => selected.includes(d));
             if (isCorrect) onComplete(1, 50);
-            else alert('Incorrect documents. Hint: Needs residence proof too.');
+            else alert('Incorrect documents. Hint: Mandatory documents like Aadhar or Utility Bill are missing.');
           }}
-          className="bg-teal-600 text-white px-8 py-3 rounded-xl font-black shadow-lg"
+          disabled={selected.length !== 2}
+          className="bg-teal-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl disabled:opacity-30 transition-opacity"
         >
-          Verify Documents
+          {selected.length === 2 ? 'Verify Documents' : `Select ${2 - selected.length} More Documents`}
         </button>
-      )}
+      </div>
     </div>
   );
 };
@@ -77,11 +78,15 @@ const ManifestoStage = ({ onComplete }) => {
           </div>
         ))}
       </div>
-      {budget === 0 && (
-        <div className="text-center">
-           <button onClick={() => onComplete(2, 75)} className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-black shadow-lg">Submit Manifesto</button>
-        </div>
-      )}
+      <div className="text-center pt-8">
+         <button 
+           disabled={budget !== 0}
+           onClick={() => onComplete(2, 75)} 
+           className="bg-indigo-600 text-white px-12 py-4 rounded-2xl font-black shadow-xl disabled:opacity-30 transition-opacity"
+         >
+           {budget === 0 ? 'Submit Manifesto' : `Allocate ${budget} Cr Remaining`}
+         </button>
+      </div>
     </div>
   );
 };
