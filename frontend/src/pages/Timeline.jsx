@@ -23,12 +23,32 @@ export default function Timeline() {
       console.error(err);
       setLoading(false);
     });
-  }, [token, user]);
 
-  const handleComplete = (phaseId, points) => {
+    if (isCandidate) {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/candidate/progress`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(data => setCompletedPhases(data))
+      .catch(err => console.error(err));
+    }
+  }, [token, user, isCandidate]);
+
+  const handleComplete = async (phaseId, points) => {
     if (!completedPhases.includes(phaseId)) {
       setCompletedPhases([...completedPhases, phaseId]);
       updatePoints(points);
+
+      if (isCandidate) {
+        await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/candidate/progress`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ phase_id: phaseId })
+        });
+      }
     }
   };
 

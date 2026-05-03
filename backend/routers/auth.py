@@ -70,7 +70,9 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         assembly_constituency=user.assembly_constituency,
         age=user.age,
         gender=user.gender,
-        language=user.language
+        language=user.language,
+        voter_id=user.voter_id,
+        family_group_id=user.family_group_id
     )
     db.add(db_user)
     db.commit()

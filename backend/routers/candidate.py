@@ -5,9 +5,12 @@ import os
 import json
 
 from backend.routers.auth import get_current_user
-from backend.models import User, CampaignMessage
+from backend.models import User, CampaignMessage, CandidateProgress
 from backend.database import get_db
 from pydantic import BaseModel
+
+class ProgressCreate(BaseModel):
+    phase_id: int
 
 router = APIRouter()
 
@@ -70,3 +73,30 @@ def get_campaign_messages(current_user: User = Depends(get_current_user), db: Se
         
     messages = db.query(CampaignMessage).filter(CampaignMessage.candidate_id == current_user.id).order_by(CampaignMessage.timestamp.desc()).all()
     return messages
+
+@router.post("/progress")
+def save_candidate_progress(request: ProgressCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role != "candidate":
+        raise HTTPException(status_code=403, detail="Only candidates can use this endpoint")
+    
+    # Check if already exists
+    existing = db.query(CandidateProgress).filter(
+        CandidateProgress.candidate_id == current_user.id,
+        CandidateProgress.phase_id == request.phase_id
+    ).first()
+    
+    if existing:
+        return {"status": "already_completed"}
+    
+    progress = CandidateProgress(candidate_id=current_user.id, phase_id=request.phase_id)
+    db.add(progress)
+    db.commit()
+    return {"status": "ok"}
+
+@router.get("/progress")
+def get_candidate_progress(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role != "candidate":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    progress = db.query(CandidateProgress).filter(CandidateProgress.candidate_id == current_user.id).all()
+    return [p.phase_id for p in progress]
