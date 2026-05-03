@@ -9,11 +9,17 @@ export default function VoterIssueHub() {
   const [submitted, setSubmitted] = useState(false);
   const [mode, setMode] = useState('text'); // text or audio
 
+  const [error, setError] = useState('');
+
   const handleSubmit = async () => {
-    if (!content) return;
+    if (!content || content.length < 10) {
+      setError('Please provide more detail (at least 10 characters).');
+      return;
+    }
+    setError('');
     setIsSubmitting(true);
     try {
-      await fetch(`/api/v1/citizen/submit-issue`, {
+      const response = await fetch(`/api/v1/citizen/submit-issue`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,10 +30,17 @@ export default function VoterIssueHub() {
           constituency: user?.assembly_constituency || 'Unknown'
         })
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to submit issue');
+      }
+      
       setSubmitted(true);
       setContent('');
     } catch (err) {
       console.error(err);
+      setError(err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -57,6 +70,8 @@ export default function VoterIssueHub() {
       </div>
 
       <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">Submit local issues you care about (e.g., roads, water, safety). Your identity remains anonymous.</p>
+
+      {error && <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-xl border border-red-100 dark:border-red-800 animate-in fade-in slide-in-from-top-2">{error}</div>}
 
       {mode === 'text' ? (
         <textarea

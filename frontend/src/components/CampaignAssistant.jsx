@@ -10,8 +10,14 @@ export default function CampaignAssistant() {
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const [error, setError] = useState('');
+
   const handleGenerate = async () => {
-    if (!topic) return;
+    if (!topic || topic.length < 5) {
+      setError('Please provide a more descriptive topic.');
+      return;
+    }
+    setError('');
     setLoading(true);
     setResult('');
     try {
@@ -20,11 +26,17 @@ export default function CampaignAssistant() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ topic, format })
       });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'Generation failed');
+      }
+      
       const data = await res.json();
       setResult(data.content);
     } catch (err) {
       console.error(err);
-      setResult("Error generating content.");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -38,6 +50,7 @@ export default function CampaignAssistant() {
         </h3>
         
         <div className="space-y-6">
+          {error && <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-xl border border-red-100 dark:border-red-800">{error}</div>}
           <div>
             <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-3">What's the topic?</label>
             <input 

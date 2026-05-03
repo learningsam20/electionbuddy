@@ -11,8 +11,14 @@ export default function SocialPostGenerator() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const [error, setError] = useState('');
+
   const handleGenerate = async () => {
-    if (!topic) return;
+    if (!topic || topic.length < 3) {
+      setError('Please provide a longer topic for better results.');
+      return;
+    }
+    setError('');
     setLoading(true);
     setPost('');
     try {
@@ -21,10 +27,17 @@ export default function SocialPostGenerator() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ topic, target_language: lang, platform })
       });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'Failed to generate post');
+      }
+      
       const data = await res.json();
       setPost(data.post);
     } catch (err) {
       console.error(err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -42,6 +55,8 @@ export default function SocialPostGenerator() {
         <h3 className="text-2xl font-black mb-6 flex items-center">
           <Share2 className="text-teal-400 mr-3" size={28} /> Social Media Amplifier
         </h3>
+        
+        {error && <div className="mb-4 p-3 bg-red-500/20 text-red-300 text-xs font-bold rounded-xl border border-red-500/30">{error}</div>}
         
         <div className="space-y-4">
           <input 

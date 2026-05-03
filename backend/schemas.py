@@ -1,21 +1,21 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field, validator
 from typing import Optional, List
 from datetime import datetime
 
 class UserBase(BaseModel):
-    email: str
-    name: str
+    email: EmailStr
+    name: str = Field(..., min_length=2, max_length=100)
     role: Optional[str] = "citizen"
-    district: Optional[str] = None
-    assembly_constituency: Optional[str] = None
-    age: Optional[int] = None
+    district: Optional[str] = Field(None, min_length=2, max_length=100)
+    assembly_constituency: Optional[str] = Field(None, min_length=2, max_length=100)
+    age: Optional[int] = Field(None, ge=18, le=120) # Must be 18+ to participate in elections
     gender: Optional[str] = None
     language: Optional[str] = "en"
-    voter_id: Optional[str] = None
+    voter_id: Optional[str] = Field(None, pattern=r"^[A-Z]{3}[0-9]{7}$") # Standard Indian Voter ID format
     family_group_id: Optional[str] = None
 
 class UserCreate(UserBase):
-    password: str
+    password: str = Field(..., min_length=8)
 
 class UserResponse(UserBase):
     id: int
@@ -36,7 +36,7 @@ class TokenData(BaseModel):
     email: Optional[str] = None
 
 class ChatRequest(BaseModel):
-    prompt: str
+    prompt: str = Field(..., min_length=1, max_length=2000)
     context: Optional[str] = None
 
 class ChatResponse(BaseModel):
@@ -44,11 +44,11 @@ class ChatResponse(BaseModel):
     audio_reply_url: Optional[str] = None
 
 class MaturityQuizSubmit(BaseModel):
-    score: int
+    score: int = Field(..., ge=0, le=100)
     answers_json: str
 
 class SocialPostRequest(BaseModel):
-    topic: str
+    topic: str = Field(..., min_length=2)
     target_language: Optional[str] = None
     platform: Optional[str] = "Twitter"
 
@@ -56,20 +56,20 @@ class ManifestoRequest(BaseModel):
     candidate_id: int
 
 class VoterIssueSubmit(BaseModel):
-    content: str
+    content: str = Field(..., min_length=10, max_length=1000)
     audio_url: Optional[str] = None
-    constituency: str
+    constituency: str = Field(..., min_length=2)
 
 class RoleUpdateRequest(BaseModel):
     user_id: int
     new_role: str
 
 class SystemAlertRequest(BaseModel):
-    content: str
-    constituency: Optional[str] = None # Optional global or targeted
+    content: str = Field(..., min_length=5, max_length=500)
+    constituency: Optional[str] = None 
 
 class FamilyLinkRequest(BaseModel):
-    family_group_id: str
+    family_group_id: str = Field(..., min_length=4)
 
 class PhaseCompleteResponse(BaseModel):
     status: str
@@ -77,9 +77,9 @@ class PhaseCompleteResponse(BaseModel):
     points_earned: Optional[int] = 0
 
 class FamilyMemberBase(BaseModel):
-    name: str
-    age: int
-    relation: str
+    name: str = Field(..., min_length=2)
+    age: int = Field(..., ge=0, le=120)
+    relation: str = Field(..., min_length=2)
     voter_id: Optional[str] = None
     is_registered: Optional[bool] = False
 
@@ -101,4 +101,4 @@ class GameProgressResponse(BaseModel):
 
 class GameStageCompleteRequest(BaseModel):
     stage_id: int
-    points_earned: int
+    points_earned: int = Field(..., ge=0)
