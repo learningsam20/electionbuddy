@@ -1,5 +1,5 @@
 {
-  "name": "democraplay-frontend",
+  "name": "ElectionBuddy-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^2.0.2",
     "@opentelemetry/api": "^1.8.0",
     "@opentelemetry/context-zone": "^1.24.0",
     "@opentelemetry/instrumentation": "^0.51.0",

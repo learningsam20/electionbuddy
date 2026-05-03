@@ -1,6 +1,6 @@
 [
   {
-    "email": "citizen@democraplay.com",
+    "email": "citizen@ElectionBuddy.com",
     "password": "Citizen@123",
     "role": "citizen",
     "name": "Arjun Kumar",
@@ -13,7 +13,7 @@
     "family_group_id": "FAM_001"
   },
   {
-    "email": "citizen2@democraplay.com",
+    "email": "citizen2@ElectionBuddy.com",
     "password": "Citizen@123",
     "role": "citizen",
     "name": "Sneha Patil",
@@ -26,7 +26,7 @@
     "family_group_id": "FAM_001"
   },
   {
-    "email": "citizen3@democraplay.com",
+    "email": "citizen3@ElectionBuddy.com",
     "password": "Citizen@123",
     "role": "citizen",
     "name": "Rohan Joshi",
@@ -39,7 +39,7 @@
     "family_group_id": "FAM_002"
   },
   {
-    "email": "citizen4@democraplay.com",
+    "email": "citizen4@ElectionBuddy.com",
     "password": "Citizen@123",
     "role": "citizen",
     "name": "Meera Deshmukh",
@@ -52,7 +52,7 @@
     "family_group_id": "FAM_002"
   },
   {
-    "email": "officer@democraplay.com",
+    "email": "officer@ElectionBuddy.com",
     "password": "Officer@123",
     "role": "officer",
     "name": "Priya Sharma",
@@ -63,7 +63,18 @@
     "language": "mr"
   },
   {
-    "email": "candidate@democraplay.com",
+    "email": "officer2@ElectionBuddy.com",
+    "password": "Officer@123",
+    "role": "officer",
+    "name": "Sanjay Deshpande",
+    "district": "Pune",
+    "assembly_constituency": "Kothrud",
+    "age": 45,
+    "gender": "Male",
+    "language": "en"
+  },
+  {
+    "email": "candidate@ElectionBuddy.com",
     "password": "Candidate@123",
     "role": "candidate",
     "name": "Rajesh Singh",
@@ -75,7 +86,19 @@
     "voter_id": "CAND123456"
   },
   {
-    "email": "admin@democraplay.com",
+    "email": "candidate2@ElectionBuddy.com",
+    "password": "Candidate@123",
+    "role": "candidate",
+    "name": "Anjali Patil",
+    "district": "Pune",
+    "assembly_constituency": "Kothrud",
+    "age": 38,
+    "gender": "Female",
+    "language": "mr",
+    "voter_id": "CAND789012"
+  },
+  {
+    "email": "admin@ElectionBuddy.com",
     "password": "Admin@123",
     "role": "admin",
     "name": "System Admin",

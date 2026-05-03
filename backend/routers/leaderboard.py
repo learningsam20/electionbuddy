@@ -20,12 +20,20 @@ def get_leaderboard(district: str = None, limit: int = 10, current_user: User = 
         .limit(limit)\
         .all()
         
-    return [
-        {
+    result = []
+    for idx, user in enumerate(top_users):
+        display_name = user.name
+        # Mask surname if not current user themselves
+        if user.id != current_user.id:
+            name_parts = user.name.split(' ')
+            if len(name_parts) > 1:
+                display_name = f"{name_parts[0]} {' '.join(['XXX' for _ in name_parts[1:]])}"
+        
+        result.append({
             "rank": idx + 1,
-            "name": user.name,
+            "name": display_name,
             "total_points": user.total_points,
             "assembly_constituency": user.assembly_constituency
-        }
-        for idx, user in enumerate(top_users)
-    ]
+        })
+        
+    return result

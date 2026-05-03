@@ -23,7 +23,7 @@ def query_gemini(request: ChatRequest, current_user: User = Depends(get_current_
         model = genai.GenerativeModel(model_name)
         
         # System Prompt construction based on role
-        system_prompt = f"You are DemocraPlay, a helpful election assistant for India. The user is a {current_user.role}. "
+        system_prompt = f"You are ElectionBuddy, a helpful election assistant for India. The user is a {current_user.role}. "
         if request.context:
             system_prompt += f"Context to use: {request.context}. "
             

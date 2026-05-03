@@ -6,7 +6,27 @@ from backend.routers.auth import get_current_user
 from backend.models import User, Telemetry
 from backend.database import get_db
 
+from backend.schemas import RoleUpdateRequest
+
 router = APIRouter()
+
+@router.get("/users")
+def list_users(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Only Admins can manage roles")
+    users = db.query(User).all()
+    return [{"id": u.id, "name": u.name, "email": u.email, "role": u.role, "district": u.district} for u in users]
+
+@router.post("/update-role")
+def update_user_role(req: RoleUpdateRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Only Admins can manage roles")
+    user = db.query(User).filter(User.id == req.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.role = req.new_role
+    db.commit()
+    return {"message": f"Role for {user.name} updated to {req.new_role}"}
 
 @router.get("/telemetry")
 def get_telemetry_stats(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):

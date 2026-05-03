@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Starts the DemocraPlay backend and frontend servers for local development.
+Starts the ElectionBuddy backend and frontend servers for local development.
 
 .DESCRIPTION
 This script checks for any existing processes running on port 8573 (FastAPI) 
@@ -9,17 +9,20 @@ It then spawns two new terminal windows to run the backend and frontend separate
 so you can view their live logs.
 #>
 
-param(
+param (
     [switch]$Demo
 )
 
-Write-Host "========================================" -ForegroundColor Cyan
-Write-Host " Starting DemocraPlay Development Server" -ForegroundColor Cyan
-Write-Host "========================================" -ForegroundColor Cyan
-
 if ($Demo) {
-    Write-Host " [Demo Mode Enabled] Demo data will be loaded." -ForegroundColor Yellow
+    $env:LOAD_DEMO_DATA = "1"
+    Write-Host "Demo mode enabled: Seeding database with election data..." -ForegroundColor Magenta
+} else {
+    $env:LOAD_DEMO_DATA = "0"
 }
+
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host " Starting ElectionBuddy Development Server" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
 
 # Function to kill processes on a specific port
 function Kill-Port {
@@ -28,14 +31,16 @@ function Kill-Port {
     if ($connections) {
         foreach ($conn in $connections) {
             $processId = $conn.OwningProcess
-            if ($processId -ne 0 -and $processId -ne 4) { # Skip System Idle Process & System
+            if ($processId -ne 0 -and $processId -ne 4) {
+                # Skip System Idle Process & System
                 try {
                     $process = Get-Process -Id $processId -ErrorAction SilentlyContinue
                     if ($process) {
                         Write-Host "Stopping existing process $($process.ProcessName) (PID: $processId) on port $Port..." -ForegroundColor Yellow
                         Stop-Process -Id $processId -Force -ErrorAction Stop
                     }
-                } catch {
+                }
+                catch {
                     Write-Host "Could not kill process on port $Port. You may need Administrator privileges." -ForegroundColor Red
                 }
             }
@@ -51,14 +56,19 @@ Kill-Port -Port 5731
 
 # 2. Start Backend
 Write-Host "Starting FastAPI Backend on port 8573..." -ForegroundColor Green
-$BackendEnvCmd = if ($Demo) { "`$env:LOAD_DEMO_DATA='1';" } else { "" }
-# Start uvicorn in a new PowerShell window, activate .venv first, run from root
-Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command `"Write-Host 'DemocraPlay Backend Logs' -ForegroundColor Cyan; $BackendEnvCmd .\backend\.venv\Scripts\Activate.ps1; uvicorn backend.main:app --reload --port 8573`"" -WindowStyle Normal
+# Use venv python if it works, otherwise fall back to the system python that has the packages
+$venvPython = Join-Path $PSScriptRoot "backend\Scripts\python.exe"
+$sysPython  = (Get-Command python -ErrorAction SilentlyContinue).Source
+$pythonExe  = if (Test-Path $venvPython) { $venvPython } else { $sysPython }
+# Verify the chosen python has fastapi; if not, use system python
+$hasFastapi = & $pythonExe -c "import fastapi" 2>$null; if ($LASTEXITCODE -ne 0) { $pythonExe = $sysPython }
+$backendCmd = "Write-Host 'ElectionBuddy Backend Logs' -ForegroundColor Cyan; `$env:LOAD_DEMO_DATA='$env:LOAD_DEMO_DATA'; & '$pythonExe' -m uvicorn backend.main:app --reload --port 8573"
+Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command $backendCmd" -WorkingDirectory $PSScriptRoot -WindowStyle Normal
 
 # 3. Start Frontend
 Write-Host "Starting React Frontend on port 5731..." -ForegroundColor Green
-# Start vite in a new PowerShell window
-Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command `"Write-Host 'DemocraPlay Frontend Logs' -ForegroundColor Cyan; cd frontend; npm run dev`"" -WindowStyle Normal
+$frontendDir = Join-Path $PSScriptRoot "frontend"
+Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command `"Write-Host 'ElectionBuddy Frontend Logs' -ForegroundColor Cyan; npm run dev`"" -WorkingDirectory $frontendDir -WindowStyle Normal
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host " Servers are starting up in new windows." -ForegroundColor Green

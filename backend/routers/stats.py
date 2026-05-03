@@ -3,8 +3,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from backend.routers.auth import get_current_user
-from backend.models import User, UserAction
+from backend.models import User, UserAction, Election, CandidateProgress, CampaignMessage
 from backend.database import get_db
+import google.generativeai as genai
+import os
+import json
 from pydantic import BaseModel
 
 class ActionRequest(BaseModel):
@@ -79,5 +82,91 @@ def get_family_stats(current_user: User = Depends(get_current_user), db: Session
 def log_user_action(request: ActionRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     action = UserAction(user_id=current_user.id, action_type=request.action_type)
     db.add(action)
+    
+    # Reward sharing
+    if request.action_type == 'share_with_fellows':
+        current_user.total_points += 5
+        
     db.commit()
     return {"status": "ok", "action": request.action_type}
+
+@router.get("/officer/overview")
+def get_officer_overview(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role != "officer":
+        raise HTTPException(status_code=403, detail="Only officers can view this dashboard")
+    
+    # District Level Stats
+    district = current_user.district
+    citizens = db.query(User).filter(User.role == "citizen", User.district == district)
+    
+    total_citizens = citizens.count()
+    
+    # Education Progress (Quiz completions)
+    # Group users by number of quizzes completed
+    quiz_stats = db.query(UserAction.user_id, func.count(UserAction.id))\
+        .filter(UserAction.action_type == "quiz_completed")\
+        .group_by(UserAction.user_id).all()
+    
+    # Categorize levels: Level 1 (1-2), Level 2 (3-5), Level 3 (6+)
+    levels = {"Level 1": 0, "Level 2": 0, "Level 3": 0}
+    for _, count in quiz_stats:
+        if count < 3: levels["Level 1"] += 1
+        elif count < 6: levels["Level 2"] += 1
+        else: levels["Level 3"] += 1
+
+    # Candidate Stats
+    candidates = db.query(User).filter(User.role == "candidate", User.district == district)
+    candidate_count = candidates.count()
+    
+    # Progressive Campaign Status
+    campaign_status = db.query(CandidateProgress).join(User).filter(User.district == district).count()
+
+    # Upcoming Elections
+    elections = db.query(Election).filter(
+        (Election.type == "national") | 
+        (Election.type == "state") | 
+        (Election.district == district)
+    ).all()
+
+    return {
+        "total_citizens": total_citizens,
+        "education_levels": levels,
+        "candidate_count": candidate_count,
+        "campaign_milestones_completed": campaign_status,
+        "upcoming_elections": [
+            {"id": e.id, "title": e.title, "type": e.type} for e in elections
+        ]
+    }
+
+@router.get("/officer/recommendations")
+def get_ai_recommendations(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role != "officer":
+        raise HTTPException(status_code=403, detail="Only officers can view this")
+    
+    # Get summary data to feed to AI
+    overview = get_officer_overview(current_user, db)
+    
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return {"recommendation": "Gemini API key not configured. Please check your .env file."}
+    
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-1.5-flash"))
+        
+        prompt = f"""
+        You are an AI Election Advisor. Analyze the following stats for the district of {current_user.district}:
+        - Total Registered Citizens: {overview['total_citizens']}
+        - Citizen Education Progress: {overview['education_levels']}
+        - Total Candidates: {overview['candidate_count']}
+        - Candidate Milestones Met: {overview['campaign_milestones_completed']}
+        - Upcoming Elections: {overview['upcoming_elections']}
+        
+        Provide 3-4 concise, actionable recommendations for the Election Officer to improve democratic participation or process efficiency.
+        Respond in plain text with clear bullet points.
+        """
+        
+        response = model.generate_content(prompt)
+        return {"recommendation": response.text}
+    except Exception as e:
+        return {"recommendation": f"Error generating recommendations: {str(e)}"}

@@ -33,7 +33,7 @@ export default function Chatbot() {
         body: JSON.stringify({ prompt: userMsg })
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'model', content: data.reply }]);
+      setMessages(prev => [...prev, { role: 'model', content: data.response }]);
     } catch (err) {
       console.error(err);
       setMessages(prev => [...prev, { role: 'model', content: 'Sorry, I encountered an error. Please try again.' }]);
@@ -54,23 +54,50 @@ export default function Chatbot() {
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50 dark:bg-slate-900/50">
         {messages.length === 0 && (
-          <div className="text-center text-slate-500 dark:text-slate-400 mt-10">
-            <p className="mb-4">Hello! I am ElectionBuddy. How can I assist you with your election-related queries today?</p>
+          <div className="flex justify-start">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl rounded-bl-sm px-5 py-3 shadow-sm border border-slate-100 dark:border-slate-700">
+              <div className="prose dark:prose-invert max-w-none">
+                <p>Hello! I am <strong>ElectionBuddy</strong>, your AI election assistant. How can I help you today?</p>
+                <p className="text-xs text-slate-400 mt-2 font-bold uppercase tracking-widest">Available Topics: Voter Registration, Candidate Affidavits, Manifestos, and Voting Ethics.</p>
+              </div>
+            </div>
           </div>
         )}
         {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[75%] rounded-2xl px-5 py-3 shadow-sm ${msg.role === 'user' ? 'bg-teal-600 text-white rounded-br-sm' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-bl-sm border border-slate-100 dark:border-slate-700'}`}>
-              <div className="prose dark:prose-invert max-w-none">
-                 {msg.role === 'model' ? <ReactMarkdown>{msg.content}</ReactMarkdown> : <p className="m-0">{msg.content}</p>}
+          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+            <div className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-md ${
+              msg.role === 'user' 
+                ? 'bg-teal-600 text-white rounded-br-sm' 
+                : 'bg-teal-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-sm border border-teal-100 dark:border-slate-700'
+            }`}>
+              <div className="text-sm sm:text-base leading-relaxed break-words whitespace-pre-wrap">
+                 {msg.role === 'model' ? (
+                   <ReactMarkdown 
+                    components={{
+                      p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc ml-4 mb-2" {...props} />,
+                      li: ({node, ...props}) => <li className="mb-1" {...props} />,
+                      strong: ({node, ...props}) => <strong className="font-black text-teal-700 dark:text-teal-400" {...props} />
+                    }}
+                   >
+                    {msg.content}
+                   </ReactMarkdown>
+                 ) : (
+                   <p className="m-0 font-medium">{msg.content}</p>
+                 )}
               </div>
             </div>
           </div>
         ))}
         {loading && (
-          <div className="flex justify-start">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl rounded-bl-sm px-5 py-3 shadow-sm border border-slate-100 dark:border-slate-700">
-              <Loader2 className="animate-spin text-teal-600 dark:text-teal-400" />
+          <div className="flex justify-start animate-in fade-in slide-in-from-left-2 duration-300">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl rounded-bl-sm px-5 py-3 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center space-x-3">
+              <div className="flex space-x-1">
+                <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce"></div>
+              </div>
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">ElectionBuddy is thinking...</span>
             </div>
           </div>
         )}

@@ -1,42 +1,64 @@
-# Combined Dockerfile for React Frontend + FastAPI Backend
+# ============================================================
+# ElectionBuddy — Multi-Stage Production Dockerfile
+# Stage 1: Build React/Vite frontend
+# Stage 2: Compile Python wheels
+# Stage 3: Lean production image (FastAPI serves built React)
+# ============================================================
 
-# Stage 1: Build React Frontend
-FROM node:20-alpine as frontend-builder
+# --------------- Stage 1: Frontend Build ---------------
+FROM node:20-alpine AS frontend-builder
+
 WORKDIR /frontend
-COPY frontend/package*.json ./
-RUN npm install
+
+# Copy dependency manifests first for layer caching
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+# Copy source and build
 COPY frontend/ ./
-# Build the Vite project into /frontend/dist
+# VITE_API_BASE_URL must be set at build time (or via .env.production)
+ARG VITE_API_BASE_URL=/
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN npm run build
 
-# Stage 2: Build Python Backend
-FROM python:3.13-slim as backend-builder
-WORKDIR /app
-RUN apt-get update && apt-get install -y build-essential curl && rm -rf /var/lib/apt/lists/*
+# --------------- Stage 2: Python Wheel Builder ---------------
+FROM python:3.12-slim AS backend-builder
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+    pip wheel --no-cache-dir --no-deps --wheel-dir /build/wheels -r requirements.txt
 
-# Stage 3: Final Production Image
-FROM python:3.13-slim
+# --------------- Stage 3: Final Production Image ---------------
+FROM python:3.12-slim AS production
+
 WORKDIR /app
 
-COPY --from=backend-builder /app/wheels /wheels
-COPY --from=backend-builder /app/requirements.txt .
+# Install wheels from builder stage (no internet needed)
+COPY --from=backend-builder /build/wheels /wheels
+COPY --from=backend-builder /build/requirements.txt .
 RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt
 
-# Copy FastAPI backend code
-COPY ./backend /app/backend
-COPY ./data /app/data
+# Copy application code
+COPY backend/ /app/backend/
+COPY data/     /app/data/
 
-# Copy built React files into a static directory inside backend
+# Copy the built React SPA into the static directory that FastAPI serves
 COPY --from=frontend-builder /frontend/dist /app/backend/static
 
-# Set Environment Variables
-ENV PYTHONUNBUFFERED=1
-ENV PORT=8573
+# Runtime environment defaults (override via docker run -e or docker-compose)
+ENV PYTHONUNBUFFERED=1 \
+    PORT=8573 \
+    APP_ENV=production \
+    DATABASE_URL=sqlite:///./data/election.db
 
 EXPOSE 8573
 
-# Run Uvicorn Server
+# Use 2 workers; set LOAD_DEMO_DATA=1 to seed on first boot
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8573", "--workers", "2"]

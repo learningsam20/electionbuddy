@@ -14,13 +14,14 @@ export default function QuizMode() {
   const [showConfig, setShowConfig] = useState(true);
 
   // Configuration state
-  const [difficulty, setDifficulty] = useState('medium');
+  const [difficulty, setDifficulty] = useState('auto');
   const [numQuestions, setNumQuestions] = useState(3);
 
   const startQuiz = () => {
     setLoading(true);
     setShowConfig(false);
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/quiz/generate?phase=Voter Registration&difficulty=${difficulty}&num_questions=${numQuestions}`, {
+    const diffParam = difficulty === 'auto' ? '' : difficulty;
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/quiz/generate?phase=Voter Registration&difficulty=${diffParam}&num_questions=${numQuestions}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => res.json())
@@ -80,8 +81,8 @@ export default function QuizMode() {
           <div className="space-y-8">
             <div>
               <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-3">Difficulty Level</label>
-              <div className="grid grid-cols-3 gap-4">
-                {['easy', 'medium', 'hard'].map((level) => (
+              <div className="grid grid-cols-4 gap-4">
+                {['auto', 'easy', 'medium', 'hard'].map((level) => (
                   <button
                     key={level}
                     onClick={() => setDifficulty(level)}

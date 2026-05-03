@@ -1,5 +1,5 @@
 #!/bin/bash
-# deploy.sh - Script to deploy DemocraPlay backend to Google Cloud Run
+# deploy.sh - Script to deploy ElectionBuddy backend to Google Cloud Run
 
 # Exit immediately if a command exits with a non-zero status
 set -e
@@ -7,11 +7,11 @@ set -e
 # Configuration Variables
 PROJECT_ID="your-gcp-project-id"
 REGION="asia-south1" # Pune/Mumbai region
-SERVICE_NAME="democraplay-api"
+SERVICE_NAME="ElectionBuddy-api"
 IMAGE_NAME="gcr.io/${PROJECT_ID}/${SERVICE_NAME}:latest"
 
 echo "========================================"
-echo " Deploying DemocraPlay API to Cloud Run"
+echo " Deploying ElectionBuddy API to Cloud Run"
 echo " Project: ${PROJECT_ID}"
 echo " Region: ${REGION}"
 echo "========================================"

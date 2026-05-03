@@ -6,7 +6,7 @@ from typing import Sequence
 from backend.database import SessionLocal
 from backend.models import Telemetry
 
-logger = logging.getLogger("democraplay.otel_exporter")
+logger = logging.getLogger("ElectionBuddy.otel_exporter")
 
 class SQLiteSpanExporter(SpanExporter):
     """

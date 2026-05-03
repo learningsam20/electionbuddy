@@ -5,7 +5,7 @@ import os
 import json
 
 from backend.routers.auth import get_current_user
-from backend.models import User, Quiz
+from backend.models import User, Quiz, UserAction
 from backend.database import get_db
 from pydantic import BaseModel
 
@@ -20,9 +20,23 @@ class SubmitQuizRequest(BaseModel):
     points_earned: int
 
 @router.get("/generate")
-def generate_quiz(phase: str = "general", difficulty: str = "medium", num_questions: int = 3, current_user: User = Depends(get_current_user)):
+def generate_quiz(phase: str = "general", difficulty: str = None, num_questions: int = 3, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not api_key:
         raise HTTPException(status_code=500, detail="Gemini API Key not configured")
+    
+    # Auto-calculate difficulty if not provided
+    if not difficulty:
+        completed_count = db.query(UserAction).filter(
+            UserAction.user_id == current_user.id,
+            UserAction.action_type == "quiz_completed"
+        ).count()
+        
+        if completed_count < 2:
+            difficulty = "easy"
+        elif completed_count < 5:
+            difficulty = "medium"
+        else:
+            difficulty = "hard"
     
     try:
         model = genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-1.5-flash"))
@@ -71,6 +85,11 @@ def generate_quiz(phase: str = "general", difficulty: str = "medium", num_questi
 @router.post("/submit")
 def submit_quiz(request: SubmitQuizRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     current_user.total_points += request.points_earned
+    
+    # Log action for progression tracking
+    action = UserAction(user_id=current_user.id, action_type="quiz_completed")
+    db.add(action)
+    
     db.commit()
     db.refresh(current_user)
     return {"message": "Points updated", "new_total": current_user.total_points}

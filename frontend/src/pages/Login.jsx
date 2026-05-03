@@ -3,7 +3,7 @@ import useStore from '../store';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
-  const [email, setEmail] = useState('citizen@democraplay.com');
+  const [email, setEmail] = useState('citizen@ElectionBuddy.com');
   const [password, setPassword] = useState('Citizen@123');
   const [error, setError] = useState('');
   const login = useStore((state) => state.login);
