@@ -100,3 +100,6 @@ class GameProgressResponse(BaseModel):
 class GameStageCompleteRequest(BaseModel):
     stage_id: int
     points_earned: int = Field(..., ge=0)
+
+class SubmitQuizRequest(BaseModel):
+    points_earned: int = Field(..., ge=0)

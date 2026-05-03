@@ -7,6 +7,7 @@ import json
 from backend.routers.auth import get_current_user
 from backend.models import User, Quiz, UserAction
 from backend.database import get_db
+from backend.schemas import SubmitQuizRequest
 from pydantic import BaseModel
 
 router = APIRouter()
