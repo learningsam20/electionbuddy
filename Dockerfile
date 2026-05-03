@@ -54,11 +54,11 @@ COPY --from=frontend-builder /frontend/dist /app/backend/static
 
 # Runtime environment defaults (override via docker run -e or docker-compose)
 ENV PYTHONUNBUFFERED=1 \
-    PORT=8573 \
     APP_ENV=production \
-    DATABASE_URL=sqlite:///./data/election.db
+    DATABASE_URL=sqlite:///./data/election.db \
+    LOAD_DEMO_DATA=1
 
-EXPOSE 8573
+EXPOSE 8080
 
-# Use 2 workers; set LOAD_DEMO_DATA=1 to seed on first boot
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8573", "--workers", "2"]
+# Cloud Run provides PORT env var; use shell form to expand $PORT
+CMD uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8080} --workers 1
